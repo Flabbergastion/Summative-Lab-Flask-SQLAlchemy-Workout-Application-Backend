@@ -1,6 +1,8 @@
 # Workout Tracker API
 
-A complete Flask-based REST API for tracking workouts and exercises, built with SQLAlchemy ORM and Marshmallow for data validation and serialization.
+## Project Description
+
+A complete Flask-based REST API for tracking workouts and exercises, built with SQLAlchemy ORM and Marshmallow for data validation and serialization. This application allows personal trainers to manage workouts and exercises with comprehensive relationship tracking, including sets, reps, and duration data.
 
 ## Features
 
@@ -58,201 +60,114 @@ A complete Flask-based REST API for tracking workouts and exercises, built with 
 
 ## API Endpoints
 
-### Workouts
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/workouts` | **List all workouts** - Returns array of all workouts with basic info |
+| GET | `/workouts/<id>` | **Get single workout** - Returns detailed workout with associated exercises and performance data |
+| POST | `/workouts` | **Create workout** - Creates new workout. Requires `duration_minutes`, optional `date` and `notes` |
+| DELETE | `/workouts/<id>` | **Delete workout** - Removes workout and all associated exercise relationships |
+| GET | `/exercises` | **List all exercises** - Returns array of all available exercises |
+| GET | `/exercises/<id>` | **Get single exercise** - Returns detailed exercise with associated workouts |
+| POST | `/exercises` | **Create exercise** - Creates new exercise. Requires `name`, `category`, optional `equipment_needed` |
+| DELETE | `/exercises/<id>` | **Delete exercise** - Removes exercise and all associated workout relationships |
+| POST | `/workouts/<workout_id>/exercises/<exercise_id>/workout_exercises` | **Add exercise to workout** - Links an exercise to a workout with performance metrics (reps, sets, duration_seconds) |
 
-#### GET /workouts
-List all workouts
-```json
-Response: [
-  {
-    "id": 1,
-    "date": "2025-10-17",
-    "duration_minutes": 45,
-    "notes": "Great upper body workout",
-    "exercises": [1, 3],
-    "workout_exercises": [1, 2]
-  }
-]
-```
+### Example Requests
 
-#### GET /workouts/<id>
-Get single workout with exercise details
-```json
-Response: {
-  "id": 1,
-  "date": "2025-10-17",
-  "duration_minutes": 45,
-  "notes": "Great upper body workout",
-  "workout_exercises": [
-    {
-      "id": 1,
-      "exercise_id": 1,
-      "reps": 15,
-      "sets": 3,
-      "duration_seconds": null
-    }
-  ]
-}
-```
+**Create a workout:**
+```bash
+curl -X POST http://localhost:5555/workouts \
+  -H "Content-Type: application/json" \
+  -d '{"duration_minutes": 45, "notes": "Upper body strength training"}'
 
-#### POST /workouts
-Create a new workout
-```json
-Request: {
-  "duration_minutes": 30,
-  "notes": "Morning cardio session"
-}
-Response: 201 Created with workout object
-```
 
-#### DELETE /workouts/<id>
-Delete a workout (cascades to WorkoutExercises)
-```json
-Response: {"message": "Workout {id} deleted successfully"}
-```
+**Create an exercise:**
+```bash
+curl -X POST http://localhost:5555/exercises \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Pull-ups", "category": "strength", "equipment_needed": true}'
 
-### Exercises
 
-#### GET /exercises
-List all exercises
-```json
-Response: [
-  {
-    "id": 1,
-    "name": "Push-ups",
-    "category": "strength",
-    "equipment_needed": false,
-    "workouts": [1, 3],
-    "workout_exercises": [1, 6]
-  }
-]
-```
+**Add exercise to workout:**
+```bash
+curl -X POST http://localhost:5555/workouts/1/exercises/1/workout_exercises \
+  -H "Content-Type: application/json" \
+  -d '{"reps": 10, "sets": 3}'
 
-#### GET /exercises/<id>
-Get single exercise with workout details
-```json
-Response: {
-  "id": 1,
-  "name": "Push-ups",
-  "category": "strength",
-  "equipment_needed": false,
-  "workout_exercises": [
-    {
-      "id": 1,
-      "workout_id": 1,
-      "reps": 15,
-      "sets": 3
-    }
-  ]
-}
-```
 
-#### POST /exercises
-Create a new exercise
-```json
-Request: {
-  "name": "Burpees",
-  "category": "cardio",
-  "equipment_needed": false
-}
-Response: 201 Created with exercise object
-```
-
-#### DELETE /exercises/<id>
-Delete an exercise (cascades to WorkoutExercises)
-```json
-Response: {"message": "Exercise {id} deleted successfully"}
-```
-
-### Workout-Exercise Relationships
-
-#### POST /workouts/<workout_id>/exercises/<exercise_id>/workout_exercises
-Add an exercise to a workout with performance metrics
-```json
-Request: {
-  "reps": 12,
-  "sets": 3,
-  "duration_seconds": null
-}
-Response: 201 Created with WorkoutExercise object
-```
-
-## Setup and Installation
+## Installation Instructions
 
 ### Prerequisites
 - Python 3.8+
 - Git
 
-### Installation
+### Setup Steps
 
 1. **Clone the repository**
 ```bash
-git clone <repository-url>
-cd workout-tracker-api
-```
+git clone https://github.com/Flabbergastion/Summative-Lab-Flask-SQLAlchemy-Workout-Application-Backend.git
+cd Summative-Lab-Flask-SQLAlchemy-Workout-Application-Backend
 
-2. **Install dependencies using pipenv**
+
+2. **Install dependencies**
 ```bash
 pipenv install
 pipenv shell
-```
 
-3. **Set up the database**
+
+3. **Navigate to server directory and set up database**
 ```bash
 cd server
-flask db init
-flask db migrate -m "Initial migration"
 flask db upgrade
-```
 
-4. **Seed the database with sample data**
+
+4. **Seed the database with example data**
 ```bash
 python seed.py
-```
 
-5. **Run the development server**
+
+## Run Instructions
+
+**Start the Flask development server:**
 ```bash
+cd server
 python app.py
-```
+
 
 The API will be available at `http://localhost:5555`
 
-## Usage Examples
-
-### Create a workout
+**Alternative Flask run command:**
 ```bash
-curl -X POST http://localhost:5555/workouts \
-  -H "Content-Type: application/json" \
-  -d '{"duration_minutes": 45, "notes": "Upper body strength training"}'
-```
+flask run --port=5555
 
-### Create an exercise
-```bash
-curl -X POST http://localhost:5555/exercises \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Pull-ups", "category": "strength", "equipment_needed": true}'
-```
 
-### Add exercise to workout
+## Testing
+
+Run the included test script to verify API functionality:
 ```bash
-curl -X POST http://localhost:5555/workouts/1/exercises/1/workout_exercises \
-  -H "Content-Type: application/json" \
-  -d '{"reps": 10, "sets": 3}'
-```
+# Start the server in one terminal
+cd server
+python app.py
+
+# Run tests in another terminal
+python test_api.py
+
 
 ## Project Structure
 
-```
+
 ├── server/
 │   ├── app.py              # Flask application and routes
-│   ├── models.py           # SQLAlchemy models
-│   ├── schemas.py          # Marshmallow schemas
-│   ├── seed.py             # Database seeding script
-│   ├── migrations/         # Flask-Migrate files
-│   └── app.db              # SQLite database (created after setup)
-├── Pipfile                 # Dependencies
-└── README.md              # This file
-```
+│   ├── models.py           # SQLAlchemy models with validations
+│   ├── schemas.py          # Marshmallow schemas for serialization
+│   ├── seed.py             # Database seeding script with example data
+│   ├── migrations/         # Flask-Migrate database migration files
+│   └── instance/           # SQLite database files (created after setup)
+├── test_api.py             # API test script 
+├── Pipfile                 # Project dependencies
+├── .gitignore              # Git ignore rules
+└── README.md               # Project documentation
+
 
 ## Technologies Used
 
@@ -277,4 +192,3 @@ Example validation error response:
     "category": ["Category must be one of: strength, cardio, flexibility, balance, sports"]
   }
 }
-```

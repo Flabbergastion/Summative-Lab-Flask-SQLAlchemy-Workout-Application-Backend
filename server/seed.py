@@ -107,7 +107,7 @@ with app.app_context():
     # Verify relationships work
     print("\nVerifying relationships...")
     first_workout = Workout.query.first()
-    print(f"First workout has {len(first_workout.exercises)} exercises")
+    print(f"First workout has {len(first_workout.workout_exercises)} exercise relationships")
     
     first_exercise = Exercise.query.first()
-    print(f"First exercise appears in {len(first_exercise.workouts)} workouts")
+    print(f"First exercise appears in {len(first_exercise.workout_exercises)} workout relationships")
